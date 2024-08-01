@@ -7,11 +7,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  wallet    String   @unique
+  balance   Float    @default(10.0) // 10 tokens by default
+  comments  Comment[]
+}
+
 model Project {
   id          Int       @id @default(autoincrement())
   title       String
   description String
   image       String
+  owner       String
   comments    Comment[]
 }
 
@@ -20,5 +28,8 @@ model Comment {
   content    String
   projectId  Int
   project    Project  @relation(fields: [projectId], references: [id])
+  wallet     String
+  weight     Float    @default(1.0)
+  premium    Boolean  @default(false)
   createdAt  DateTime @default(now())
 }

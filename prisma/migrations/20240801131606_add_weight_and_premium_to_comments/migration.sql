@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Comment" ADD COLUMN     "premium" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "weight" DOUBLE PRECISION NOT NULL DEFAULT 1.0;
