@@ -1,24 +1,34 @@
 // components/Web3Provider.tsx
-"use client";
 
 import { WagmiConfig, createConfig, http } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { sepolia } from "wagmi/chains"; // Import Sepolia chain
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+
+const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
+const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
+
+if (!alchemyId) {
+  console.error("NEXT_PUBLIC_ALCHEMY_ID is not set");
+}
+
+if (!walletConnectProjectId) {
+  console.error("NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set");
+}
 
 const config = createConfig(
   getDefaultConfig({
     // Your dApp's chains
-    chains: [mainnet],
+    chains: [sepolia], // Use Sepolia testnet
     transports: {
-      // RPC URL for each chain
-      [mainnet.id]: http(
-        `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID!}`
+      // RPC URL for Sepolia testnet
+      [sepolia.id]: http(
+        `https://eth-sepolia.g.alchemy.com/v2/${alchemyId}`
       ),
     },
 
     // Required API Keys
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+    walletConnectProjectId: walletConnectProjectId,
 
     // Required App Info
     appName: "deliberatescoring",
