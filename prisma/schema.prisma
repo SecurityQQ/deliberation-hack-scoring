@@ -7,29 +7,47 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
+model Notice {
   id        Int      @id @default(autoincrement())
-  wallet    String   @unique
-  balance   Float    @default(10.0) // 10 tokens by default
-  comments  Comment[]
+  wallet    String
+  txHash    String
+  notice    String
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  wallet   String    @unique
+  balance  Float     @default(10.0) // 10 tokens by default
+  comments Comment[]
+  notices  Notice[]
 }
 
 model Project {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String
-  image       String
-  owner       String
-  comments    Comment[]
+  id               Int       @id @default(autoincrement())
+  title            String
+  description      String
+  image            String
+  owner            String
+  comments         Comment[]
+  deliberationMap  String?   // New field for deliberation map
+  ratings          Json?     // New field for storing ratings
 }
 
+
+
 model Comment {
-  id         Int      @id @default(autoincrement())
-  content    String
-  projectId  Int
-  project    Project  @relation(fields: [projectId], references: [id])
-  wallet     String
-  weight     Float    @default(1.0)
-  premium    Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  content   String
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id])
+  wallet    String
+  weight    Float    @default(1.0)
+  premium   Boolean  @default(false)
+  rating    Int?      // New field for rating
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }

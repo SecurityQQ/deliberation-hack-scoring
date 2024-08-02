@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { createWalletClient, custom, parseEther, formatEther } from 'viem';
 import { publicClient } from "@/lib/publicClient";
 import FundsManagerABI from '@/artifacts/contracts/FundsManager.sol/FundsManager.json';
+import { Button } from "@/components/ui/Button"; // Assuming Button is a default export
 
 // Cast contract address to HexString
 type HexString = `0x${string}`;
@@ -185,49 +186,59 @@ const Treasury = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Treasury Balance</h1>
-        <p className="text-lg">Total Balance: {balance} ETH</p>
-        <p className="text-lg">Available to Withdraw: {withdrawalLimit} ETH</p>
+      <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6 text-center">Treasury Balance</h1>
+        <p className="text-xl mb-6 text-center">Hackathon Prize Pool: {withdrawalLimit} ETH</p>
+        <video 
+          src="/m.mp4" 
+          className="mx-auto mb-6 w-full max-w-md rounded-lg shadow-md" 
+          autoPlay 
+          loop 
+          muted 
+        />
         {role === 'superAdmin' && (
           <>
-            <button
-              onClick={handleWithdrawAll}
-              className="bg-red-500 text-white p-2 rounded mb-4"
-            >
-              Withdraw All Funds
-            </button>
-            <div>
+            <div className="flex flex-col items-center space-y-4 mb-6">
+              <Button
+                onClick={handleWithdrawAll}
+                variant="destructive"
+                className="py-2 px-4"
+              >
+                Withdraw All Funds
+              </Button>
               <input
                 type="number"
                 value={newLimit}
                 onChange={(e) => setNewLimit(e.target.value)}
-                className="border p-2 mb-4"
+                className="border p-2 rounded w-64 mb-4 text-center"
                 placeholder="Set new withdrawal limit"
               />
-              <button
+              <Button
                 onClick={handleSetLimit}
-                className="bg-green-500 text-white p-2 rounded mb-4"
+                variant="default"
+                className="py-2 px-4"
               >
                 Set Withdrawal Limit
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleEnableAutoLimit}
-                className="bg-blue-500 text-white p-2 rounded mb-4"
+                variant="default"
+                className="py-2 px-4"
               >
                 Enable Automatic Withdrawal Limit
-              </button>
+              </Button>
             </div>
           </>
         )}
         {role === 'withdrawalPerson' && (
-          <div>
-            <button
+          <div className="flex justify-center">
+            <Button
               onClick={handleWithdrawWithLimit}
-              className="bg-blue-500 text-white p-2 rounded mb-4"
+              variant="outline"
+              className="py-2 px-4"
             >
-              Withdraw Limit Amount
-            </button>
+              💸 Withdraw Prize
+            </Button>
           </div>
         )}
       </div>

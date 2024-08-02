@@ -26,15 +26,15 @@ const Home = ({ projects }) => {
     <Layout>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Hackathon Projects</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="flex flex-wrap gap-4">
           {projects.map((project) => (
-            <div key={project.id} className="border p-4 rounded-lg">
+            <div key={project.id} className="flex-1 border p-4 rounded-lg max-w-sm">
               <Link href={`/projects/${project.id}`}>
                   <img src={project.image} alt={project.title} className="w-full h-48 object-cover rounded-lg mb-4" />
                   <h2 className="text-xl font-bold">{project.title}</h2>
               </Link>
               <p className="mb-4">{project.description}</p>
-              <p className="mb-4"><strong>Owner:</strong> {project.owner}</p>
+              <p className="mb-4 truncate"><strong>Owner:</strong> {project.owner}</p>
               <h3 className="font-semibold">Comments:</h3>
               <ul>
                 {project.comments.map((comment) => (
