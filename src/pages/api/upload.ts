@@ -83,8 +83,10 @@ async function uploadFileToCloudinary(fileBuffer: Buffer, fileName: string): Pro
     const uploadStream = cloudinary.v2.uploader.upload_stream({ resource_type: 'auto' }, (error, result) => {
       if (error) {
         reject(error);
-      } else {
+      } else if (result) {
         resolve(result);
+      } else {
+        reject(new Error("Upload result is undefined"));
       }
     });
 

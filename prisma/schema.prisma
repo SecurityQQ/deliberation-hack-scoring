@@ -33,8 +33,11 @@ model Project {
   owner            String
   comments         Comment[]
   deliberationMap  String?   // New field for deliberation map
+  aiSummary        String?   // New field for storing AI Summary
+  rank             Float?
   ratings          Json?     // New field for storing ratings
 }
+
 
 
 

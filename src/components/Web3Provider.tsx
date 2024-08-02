@@ -1,5 +1,6 @@
 // components/Web3Provider.tsx
 
+import React, { ReactNode } from "react";
 import { WagmiConfig, createConfig, http } from "wagmi";
 import { sepolia } from "wagmi/chains"; // Import Sepolia chain
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -42,7 +43,11 @@ const config = createConfig(
 
 const queryClient = new QueryClient();
 
-export const Web3Provider = ({ children }) => {
+interface Web3ProviderProps {
+  children: ReactNode;
+}
+
+export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
   return (
     <WagmiConfig config={config}>
       <QueryClientProvider client={queryClient}>

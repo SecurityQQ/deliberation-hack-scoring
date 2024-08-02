@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 import { createWalletClient, custom, parseEther, formatEther } from 'viem';
 import { publicClient } from "@/lib/publicClient";
 import FundsManagerABI from '@/artifacts/contracts/FundsManager.sol/FundsManager.json';
-import { Button } from "@/components/ui/Button"; // Assuming Button is a default export
+import { Button } from "@/components/ui/button"; // Assuming Button is a default export
 
 // Cast contract address to HexString
 type HexString = `0x${string}`;
@@ -26,12 +26,12 @@ const Treasury = () => {
             abi: FundsManagerABI.abi,
             address: castedContractAddress,
             functionName: 'getBalance',
-          }),
+          }) as Promise<bigint>,
           publicClient.readContract({
             abi: FundsManagerABI.abi,
             address: castedContractAddress,
             functionName: 'getWithdrawalLimit',
-          }),
+          }) as Promise<bigint>,
         ]);
         setBalance(parseFloat(formatEther(balance)));
         setWithdrawalLimit(parseFloat(formatEther(limit)));
@@ -95,7 +95,7 @@ const Treasury = () => {
       alert('Withdrawal limit set successfully!');
       setWithdrawalLimit(parseFloat(newLimit)); // Update the state with the new limit
       setNewLimit(''); // Clear the input field
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to set withdrawal limit:", error);
       alert(`Failed to set withdrawal limit: ${error.message}`);
     }
@@ -122,8 +122,8 @@ const Treasury = () => {
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       console.log('Transaction receipt:', receipt);
       alert('Automatic withdrawal limit enabled!');
-      setWithdrawalLimit(parseFloat((balance * 70) / 100)); // Update the state with the automatic limit
-    } catch (error) {
+      setWithdrawalLimit(parseFloat(((balance * 70) / 100).toString())); // Update the state with the automatic limit
+    } catch (error: any) {
       console.error("Failed to enable automatic withdrawal limit:", error);
       alert(`Failed to enable automatic withdrawal limit: ${error.message}`);
     }
@@ -150,7 +150,7 @@ const Treasury = () => {
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       console.log('Transaction receipt:', receipt);
       alert('Withdraw all funds successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to withdraw all funds:", error);
       alert(`Failed to withdraw all funds: ${error.message}`);
     }
@@ -178,7 +178,7 @@ const Treasury = () => {
       console.log('Transaction receipt:', receipt);
       alert(`Withdraw ${withdrawalLimit} ETH successfully!`);
       setWithdrawalLimit(0); // Reset the withdrawal limit
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to withdraw with limit:", error);
       alert(`Failed to withdraw with limit: ${error.message}`);
     }

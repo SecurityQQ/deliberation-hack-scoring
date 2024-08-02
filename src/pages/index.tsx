@@ -4,6 +4,26 @@ import Link from 'next/link';
 import { prisma } from '../lib/prisma';
 import Layout from "@/components/Layout";
 
+// Define types for Project and Comment
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+}
+
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  owner: string;
+  comments: Comment[];
+}
+
+interface HomeProps {
+  projects: Project[];
+}
+
 export const getServerSideProps: GetServerSideProps = async () => {
   const projects = await prisma.project.findMany({
     include: { comments: true },
@@ -21,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return { props: { projects: serializedProjects } };
 };
 
-const Home = ({ projects }) => {
+const Home: React.FC<HomeProps> = ({ projects }) => {
   return (
     <Layout>
       <div className="container mx-auto p-4">

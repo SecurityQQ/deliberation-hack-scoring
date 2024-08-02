@@ -1,8 +1,14 @@
-// components/RatingSlider.js
+// components/RatingSlider.tsx
 
+import { FC } from 'react';
 import { Slider } from "@/components/ui/slider"; // Ensure you have a Slider component
 
-const RatingSlider = ({ value, onChange }) => {
+interface RatingSliderProps {
+  value: number;
+  onChange: (value: number) => void;
+}
+
+const RatingSlider: FC<RatingSliderProps> = ({ value, onChange }) => {
   return (
     <div className="w-full">
       <Slider

@@ -14,11 +14,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ message: 'Wallet address is required' });
   }
 
-  // Check if user is the project owner
+  // Check if the project exists
   const project = await prisma.project.findUnique({
     where: { id: Number(id) },
   });
 
+  if (!project) {
+    return res.status(404).json({ message: 'Project not found' });
+  }
+
+  // Check if user is the project owner
   if (project.owner === wallet) {
     return res.status(400).json({ message: 'You cannot comment on your own project' });
   }
@@ -51,7 +56,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Generate the deliberation map after the comment is created
   try {
     await generateDeliberationMap(Number(id));
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: 'Error generating deliberation map', error: error.message });
   }

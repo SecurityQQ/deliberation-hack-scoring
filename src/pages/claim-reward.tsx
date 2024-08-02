@@ -17,13 +17,18 @@ const ClaimReward = () => {
   const handleClaimReward = async () => {
     if (!isConnected) return alert('Please connect your wallet.');
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAddress as string, contractABI.abi, signer);
 
-    const tx = await contract.claimReward(winner);
-    await tx.wait();
-    alert('Reward claimed successfully.');
+    try {
+      const tx = await contract.claimReward(winner);
+      await tx.wait();
+      alert('Reward claimed successfully.');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to claim reward.');
+    }
   };
 
   return (
@@ -40,14 +45,12 @@ const ClaimReward = () => {
         {!isConnected ? (
           <WalletButton />
         ) : (
-          <>
-            <button
-              onClick={handleClaimReward}
-              className="bg-green-500 text-white rounded px-4 py-2"
-            >
-              Claim Reward
-            </button>
-          </>
+          <button
+            onClick={handleClaimReward}
+            className="bg-green-500 text-white rounded px-4 py-2"
+          >
+            Claim Reward
+          </button>
         )}
       </div>
     </Layout>

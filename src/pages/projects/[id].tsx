@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import { ParsedUrlQuery } from 'querystring';
 import { prisma } from '../../lib/prisma';
 import Layout from "@/components/Layout";
 import { useState, useEffect } from 'react';
@@ -14,8 +15,12 @@ import { AreaChart, CartesianGrid, XAxis, Area, Tooltip } from 'recharts';
 import { PlusIcon, EditIcon } from '@/components/icons';
 import RatingSlider from '@/components/RatingSlider';
 
+interface Params extends ParsedUrlQuery {
+  id: string;
+}
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.params;
+  const { id } = context.params as Params;
   const project = await prisma.project.findUnique({
     where: { id: Number(id) },
     include: { comments: true },
@@ -335,7 +340,7 @@ const CommentsSection: React.FC<any> = ({ comments, renderRatingIcon, handlePowe
   <div>
     <h2 className="text-2xl font-bold">Comments</h2>
     <div className="mt-4 space-y-6">
-      {comments.map((comment) => (
+      {comments.map((comment: any) => (
         <div
           key={comment.id}
           className={`flex flex-col sm:flex-row items-start gap-4 p-4 rounded-lg ${comment.premium ? 'border border-accent' : ''}`}
