@@ -249,7 +249,7 @@ const ProjectHeader: React.FC<{ project: any }> = ({ project }) => (
     <div className="space-y-4 md:col-span-2 lg:col-span-2">
       <div>
         <h1 className="text-3xl font-bold">{project.title}</h1>
-          <ReactMarkdown className="custom-prose mt-2 text-muted-foreground">
+          <ReactMarkdown className="custom-prose mt-2 text-muted-foreground overflow-hidden">
           {project.description}
         </ReactMarkdown>
       </div>

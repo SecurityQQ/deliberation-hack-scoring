@@ -15,6 +15,15 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isConnected && address) {
+      const saveUser = async (walletAddress: string) => {
+        try {
+          await axios.post('/api/users', { walletAddress });
+          console.log('User saved successfully');
+        } catch (error) {
+          console.error('Failed to save user:', error);
+        }
+      };
+
       const fetchBalance = async () => {
         try {
           const response = await axios.get(`/api/get-balance?wallet=${address}`);
@@ -24,6 +33,7 @@ const Navbar = () => {
         }
       };
 
+      saveUser(address);
       fetchBalance();
     }
   }, [isConnected, address]);
@@ -61,9 +71,6 @@ const Navbar = () => {
             <Banknote className="w-5 h-5 text-accent" />
             <span className="hidden md:inline font-extrabold text-primary-foreground">Treasury</span>
           </Link>
-          {/*<Link href="/leaderboard" className="flex items-center space-x-1 hover:text-accent transition-all duration-300">
-            <span className="hidden md:inline font-extrabold text-primary-foreground">Leaderboard</span>
-          </Link>*/}
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2 p-2 bg-secondary rounded-full shadow-md">
@@ -102,16 +109,14 @@ const Navbar = () => {
       )}
 
       {router.pathname !== '/leaderboard' && (
-        
         <div className="absolute left-1/2 transform -translate-x-1/2 -mt-4 md:mt-16 hover:scale-110 transition-transform duration-300">
-        <Link href="/leaderboard">
-          <div className="relative w-24 h-24 rounded-full bg-white bg-opacity-10 shadow-lg backdrop-filter backdrop-blur-md border border-background">
-            <Image src="/200w.gif" alt="Animated GIF" layout="fill" className="object-cover rounded-full" />
-          </div>
-          <h1 className="text-xl font-bold text-accent mt-2 hidden md:block text-center -ml-2">Leaderboard</h1>
+          <Link href="/leaderboard">
+            <div className="relative w-24 h-24 rounded-full bg-white bg-opacity-10 shadow-lg backdrop-filter backdrop-blur-md border border-background">
+              <Image src="/200w.gif" alt="Animated GIF" layout="fill" className="object-cover rounded-full" />
+            </div>
+            <h1 className="text-xl font-bold text-accent mt-2 hidden md:block text-center -ml-2">Leaderboard</h1>
           </Link>
         </div>
-        
       )}
     </nav>
   );
