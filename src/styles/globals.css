@@ -57,6 +57,71 @@
     --chart-4: 30 80% 55%; /* Orange */
     --chart-5: 220 70% 50%; /* Blue */
   }
+
+  .custom-prose {
+    @apply max-w-none;
+
+    h1 {
+      @apply mt-3 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+    }
+    h2 {
+      @apply mt-2 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+    }
+    h3 {
+      @apply mt-1 scroll-m-20 text-2xl font-extralight tracking-tight;
+    }
+    p {
+      @apply leading-7 font-extralight mt-1;
+    }
+
+    h4 {
+      @apply leading-7 font-extralight mt-1 text-xs;
+    }
+
+    h5 {
+      @apply leading-7 font-extralight mt-1 text-xs;
+    }
+
+    strong {
+      @apply font-bold;
+    }
+    a {
+      @apply font-medium text-primary underline underline-offset-4;
+    }
+    blockquote {
+      @apply mt-2 border-l-2 pl-6 italic;
+    }
+    ul {
+      @apply my-2 ml-3 list-disc;
+    }
+    ul > li {
+      @apply mt-2;
+    }
+    table {
+      @apply w-full;
+    }
+    thead {
+      @apply bg-muted;
+    }
+    th,
+    td {
+      @apply border px-4 py-2;
+    }
+    th {
+      @apply text-left font-bold;
+    }
+    th[align=center],
+    td[align=center] {
+      @apply text-center;
+    }
+    th[align=right],
+    td[align=right] {
+      @apply text-right;
+    }
+    tr {
+      @apply m-0 border-t p-0 even:bg-muted;
+    }
+  }
 }
 
 @layer base {
