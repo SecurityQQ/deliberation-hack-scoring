@@ -7,6 +7,10 @@ const openai = new OpenAI({
   apiKey: process.env['OPENAI_API_KEY'],
 });
 
+export const config = {
+  maxDuration: 30,  // vercel config for 30sec timeout
+};
+
 export const generateSummariesAndRanks = async () => {
   // Get all projects and their deliberation maps
   const projects = await prisma.project.findMany({
