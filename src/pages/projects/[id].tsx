@@ -14,6 +14,9 @@ import { Minus, Plus, TrendingUp, TrendingDown, CircleSlash } from 'lucide-react
 import { AreaChart, CartesianGrid, XAxis, Area, Tooltip } from 'recharts';
 import { PlusIcon, EditIcon } from '@/components/icons';
 import RatingSlider from '@/components/RatingSlider';
+import { Slider } from "@/components/ui/slider"; // Ensure you have a Slider component
+import Link from 'next/link';
+
 
 interface Params extends ParsedUrlQuery {
   id: string;
@@ -74,6 +77,9 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
   const [rating, setRating] = useState(50);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [showBoostPopup, setShowBoostPopup] = useState(false);
+  const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
+  const [boostValue, setBoostValue] = useState(0);
 
   useEffect(() => {
     if (isConnected && address) {
@@ -203,6 +209,125 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
     return <TrendingDown className="text-pink-500" />;
   };
 
+  const handleBoostPopup = (commentId: number) => {
+    setSelectedCommentId(commentId);
+    setShowBoostPopup(true);
+  };
+
+  const handleBoost = async () => {
+    if (!isConnected) {
+      setErrorMessage('Please connect your wallet.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const spendRes = await fetch('/api/spend-balance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address, amount: boostValue }),
+      });
+
+      if (!spendRes.ok) {
+        const spendData = await spendRes.json();
+        setErrorMessage(spendData.error);
+        setIsLoading(false);
+        return;
+      }
+
+      const updatedBalance = await spendRes.json();
+      setBalance(parseFloat(updatedBalance.balance));
+
+      const res = await fetch(`/api/projects/${project.id}/comments/${selectedCommentId}/boost`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ boostValue }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setErrorMessage(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const updatedComment = await res.json();
+      setComments(comments.map(comment => 
+        comment.id === updatedComment.id ? updatedComment : comment
+      ));
+      setSuccessMessage('Comment boosted successfully.');
+      setShowBoostPopup(false);
+      setBoostValue(0);
+
+    } catch (error) {
+      setErrorMessage('Failed to boost comment.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDownvote = async (commentId: number) => {
+    if (!isConnected) {
+      setErrorMessage('Please connect your wallet.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const spendRes = await fetch('/api/spend-balance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address, amount: boostValue }),
+      });
+
+      if (!spendRes.ok) {
+        const spendData = await spendRes.json();
+        setErrorMessage(spendData.error);
+        setIsLoading(false);
+        return;
+      }
+
+      const updatedBalance = await spendRes.json();
+      setBalance(parseFloat(updatedBalance.balance));
+
+      const res = await fetch(`/api/projects/${project.id}/comments/${commentId}/downvote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ boostValue }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setErrorMessage(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const updatedComment = await res.json();
+      setComments(comments.map(comment => 
+        comment.id === updatedComment.id ? updatedComment : comment
+      ));
+      setSuccessMessage('Comment downvoted successfully.');
+      setShowBoostPopup(false);
+      setBoostValue(0);
+
+    } catch (error) {
+      setErrorMessage('Failed to downvote comment.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-6 lg:py-16">
@@ -215,7 +340,7 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
         <CommentsSection 
           comments={comments} 
           renderRatingIcon={renderRatingIcon} 
-          handlePowerUp={incrementAmount}
+          handleBoostPopup={handleBoostPopup}
         />
         <CommentForm 
           content={content}
@@ -232,10 +357,187 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
           isLoading={isLoading}
           isFirstComment={comments.every(comment => comment.wallet !== address)}
         />
+        {showBoostPopup && (
+          <BoostPopup
+            boostValue={boostValue}
+            setBoostValue={setBoostValue}
+            handleBoost={handleBoost}
+            handleDownvote={handleDownvote}
+            setShowBoostPopup={setShowBoostPopup}
+            balance={balance}
+          />
+        )}
       </div>
     </Layout>
   );
 };
+
+
+interface BoostPopupProps {
+  boostValue: number;
+  setBoostValue: (value: number) => void;
+  handleBoost: () => void;
+  handleDownvote: () => void;
+  setShowBoostPopup: (show: boolean) => void;
+  balance: number;
+}
+
+
+const BoostPopup: React.FC<BoostPopupProps> = ({
+  boostValue,
+  setBoostValue,
+  handleBoost,
+  handleDownvote,
+  setShowBoostPopup,
+  balance
+}) => {
+  const incrementAmount = () => {
+    if (boostValue < balance) {
+      setBoostValue(Math.min(boostValue + 1, balance));
+    }
+  };
+
+  const decrementAmount = () => {
+    if (boostValue > 1) {
+      setBoostValue(Math.max(boostValue - 1, 1));
+    }
+  };
+
+  const { isConnected } = useAccount();
+
+   if (!isConnected) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-background p-4 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold text-foreground mb-4">Boost Comment</h2>
+          <p className="text-muted-foreground mb-4">You need to connect your wallet to boost comments</p>
+          <div className='flex justify-center'>
+          <Button onClick={() => setShowBoostPopup(false)} className="mt-4">
+            Close
+          </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-background p-4 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-foreground">Boost Comment</h2>
+          <Button
+            className="p-1 text-background hover:text-foreground focus:outline-none w-8 h-8 flex items-center justify-center"
+            onClick={() => setShowBoostPopup(false)}
+            aria-label="Close"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </Button>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={decrementAmount}
+              disabled={boostValue <= 1}
+            >
+              <Minus className="h-4 w-4" />
+              <span className="sr-only">Decrease</span>
+            </Button>
+            <div className="text-2xl font-bold flex items-center gap-2 pr-4">
+              <Image src="/coin.gif" alt="Coin" width={24} height={24} />
+              {parseFloat(boostValue).toFixed(1)}
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={incrementAmount}
+              disabled={boostValue >= balance}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="sr-only">Increase</span>
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-start space-x-2">
+          <span className="text-foreground font-semibold">Available:</span>
+          <Image src="/coin.gif" alt="Coin" width={24} height={24} />
+          <span className="text-foreground font-semibold">{balance ? parseFloat(balance).toFixed(1) : '...'}</span>
+        </div>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-muted-foreground/60 text-xs">
+            {`You can increase or decrease authority by upvoting or downvoting.`}
+          </p>
+          <p className="text-muted-foreground/60 text-xs pr-1">
+            {`Doesn't have enough balance?`}
+          </p>
+          
+          <Link href="/add-balance" className="text-accent hover:underline text-xs">
+            Top up
+          </Link>
+        </div>
+        <div className="flex justify-between mt-4">
+          <Button variant="outline" onClick={handleBoost}>
+            <Plus className="mr-2" />
+            Boost
+          </Button>
+          <Button variant="outline" onClick={handleDownvote}>
+            <Minus className="mr-2" />
+            Downvote
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+// const BoostPopup: React.FC<any> = ({ boostValue, setBoostValue, handleBoost, handleDownvote, setShowBoostPopup, balance }) => (
+//   <div className="fixed inset-0 flex items-center justify-center z-50">
+//     <div className="bg-white p-4 rounded-lg shadow-lg w-80">
+//       <h2 className="text-xl font-bold mb-4">Boost Comment</h2>
+//       <Slider
+//         defaultValue={[boostValue+1]}
+//         max={balance}
+//         step={1}
+//         onValueChange={(value) => setBoostValue(value[0])}
+//         className="w-full"
+//       />
+//       <div className="flex items-start space-x-2 pb-4 pt-2">
+//         <span className="text-foreground font-semibold">Boost Amount:</span>
+//         <Image src="/coin.gif" alt="Coin" width={24} height={24} />
+//         <span className="text-foreground font-semibold pl-0">{boostValue ? `${parseFloat(boostValue).toFixed(1)} / ${parseFloat(balance).toFixed(1)}` : 'Select amount'}</span>
+        
+//       </div>
+// {/*      <div className="flex items-start space-x-2 pb-4">
+//           <span className="text-foreground font-semibold">Available:</span>
+//           <Image src="/coin.gif" alt="Coin" width={24} height={24} />
+//           <span className="text-foreground font-semibold">{(balance) ? parseFloat(balance).toFixed(1) : '...'}</span>
+//         </div>
+// */}
+//       <p className='text-muted-foreground/60 text-xs'>You can increase or decrese authority by upvoting or downvoting</p>
+//       <div className="flex justify-between mt-4">
+//         <Button variant="outline" onClick={handleBoost}>
+//           <Plus className="mr-2" />
+//           Boost
+//         </Button>
+//         <Button variant="outline" onClick={handleDownvote}>
+//           <Minus className="mr-2" />
+//           Downvote
+//         </Button>
+//       </div>
+//       <div className='flex justify-center pt-2'>
+//         <Button onClick={() => setShowBoostPopup(false)}>Cancel</Button>
+//       </div>
+//     </div>
+//   </div>
+// );
+
+
 
 const ProjectHeader: React.FC<{ project: any }> = ({ project }) => (
   <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
@@ -273,7 +575,6 @@ const DeliberationMap: React.FC<any> = ({ project, fetchDeliberationMap }) => {
     ? project.deliberationMap.replace(/.*markdown[\s\S]*?/, "").trim()
     : project.deliberationMap;
 
-
   return (
     <div className="mt-12 space-y-8 relative mb-4">
       <div>
@@ -309,8 +610,6 @@ const DeliberationMap: React.FC<any> = ({ project, fetchDeliberationMap }) => {
   );
 };
 
-
-
 const CommentsScore: React.FC<{ comments: any[] }> = ({ comments }) => (
   <div className='pt-16 md:pt-8'>
     <h2 className="text-2xl font-bold">Comments Score</h2>
@@ -338,7 +637,7 @@ const CommentsScore: React.FC<{ comments: any[] }> = ({ comments }) => (
   </div>
 );
 
-const CommentsSection: React.FC<any> = ({ comments, renderRatingIcon, handlePowerUp }) => (
+const CommentsSection: React.FC<any> = ({ comments, renderRatingIcon, handleBoostPopup }) => (
   <div>
     <h2 className="text-2xl font-bold">Comments</h2>
     <div className="mt-4 space-y-6">
@@ -374,14 +673,11 @@ const CommentsSection: React.FC<any> = ({ comments, renderRatingIcon, handlePowe
               <ReactMarkdown>{comment.content}</ReactMarkdown>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => handlePowerUp(comment.id)}>
+              <Button variant="outline" size="sm" onClick={() => handleBoostPopup(comment.id)}>
                 <PlusIcon className="w-4 h-4" />
                 Boost
               </Button>
-              <Button variant="outline" size="sm">
-                <EditIcon className="w-4 h-4" />
-                Edit
-              </Button>
+              
             </div>
           </div>
         </div>
@@ -389,6 +685,7 @@ const CommentsSection: React.FC<any> = ({ comments, renderRatingIcon, handlePowe
     </div>
   </div>
 );
+
 
 const CommentForm: React.FC<any> = ({
   content, 
