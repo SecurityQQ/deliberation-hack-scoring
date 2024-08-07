@@ -271,7 +271,7 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
     }
   };
 
-  const handleDownvote = async (commentId: number) => {
+  const handleDownvote = async () => {
     if (!isConnected) {
       setErrorMessage('Please connect your wallet.');
       return;
@@ -298,7 +298,7 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
       const updatedBalance = await spendRes.json();
       setBalance(parseFloat(updatedBalance.balance));
 
-      const res = await fetch(`/api/projects/${project.id}/comments/${commentId}/downvote`, {
+      const res = await fetch(`/api/projects/${project.id}/comments/${selectedCommentId}/downvote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -364,7 +364,7 @@ const Project: React.FC<ProjectProps> = ({ project }) => {
             handleBoost={handleBoost}
             handleDownvote={handleDownvote}
             setShowBoostPopup={setShowBoostPopup}
-            balance={balance}
+            balance={balance!}
           />
         )}
       </div>
@@ -449,7 +449,7 @@ const BoostPopup: React.FC<BoostPopupProps> = ({
             </Button>
             <div className="text-2xl font-bold flex items-center gap-2 pr-4">
               <Image src="/coin.gif" alt="Coin" width={24} height={24} />
-              {parseFloat(boostValue).toFixed(1)}
+              {boostValue.toFixed(1)}
             </div>
             <Button
               variant="outline"
@@ -465,7 +465,7 @@ const BoostPopup: React.FC<BoostPopupProps> = ({
         <div className="flex items-start space-x-2">
           <span className="text-foreground font-semibold">Available:</span>
           <Image src="/coin.gif" alt="Coin" width={24} height={24} />
-          <span className="text-foreground font-semibold">{balance ? parseFloat(balance).toFixed(1) : '...'}</span>
+          <span className="text-foreground font-semibold">{balance ? balance.toFixed(1) : '...'}</span>
         </div>
         <div className="flex items-center justify-between mt-4">
           <p className="text-muted-foreground/60 text-xs">
