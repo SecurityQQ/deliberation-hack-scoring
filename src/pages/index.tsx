@@ -1,108 +1,316 @@
-// pages/index.tsx
-import { GetServerSideProps } from 'next';
-import Link from 'next/link';
-import { prisma } from '../lib/prisma';
-import Layout from "@/components/Layout";
-import ReactMarkdown from 'react-markdown';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import Link from 'next/link';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
+const Schedule = () => {
+  return (
+    <div className="my-8">
+      <h2 className="text-2xl font-bold">Schedule</h2>
+      <Accordion type="single" collapsible className="w-full mt-4">
 
-// Define types for Project and Comment
-interface Comment {
-  id: number;
-  content: string;
-  createdAt: string;
-}
+        {/* Tuesday 27th August */}
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Tuesday 27th August</AccordionTrigger>
+          <AccordionContent>
+            <ul className="list-disc ml-8">
+              <li><strong>12pm kick-off:</strong> Opening remarks & Track announces</li>
+              <li><strong>1pm-3pm:</strong> Team Formation + Ideas Pitching
+                <ul className="list-disc ml-8 mt-2">
+                  <li>Moment to pitch your project that you want to work on</li>
+                </ul>
+              </li>
+              <li><strong>3pm – 4pm Mentors Checkpoint</strong>
+                <ul className="list-disc ml-8 mt-2">
+                  <li>Each person shares their progress and problems</li>
+                  <li>Other people try to share their stories of how they solved similar projects</li>
+                  <li><strong>Pro-Tip:</strong> prep, ask your team:
+                    <ul className="list-disc ml-8 mt-2">
+                      <li>What do we want to build?</li>
+                      <li>What do we want to achieve this Hackathon?</li>
+                      <li>What is our dream outcome?</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><strong>4pm:</strong> 🍕 Pizza Break</li>
+              <li><strong>24/7 Hacking</strong></li>
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  owner: string;
-  comments: Comment[];
-}
+        {/* Wednesday 28th August */}
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Wednesday 28th August</AccordionTrigger>
+          <AccordionContent>
+            <ul className="list-disc ml-8">
+              <li><strong>4am:</strong> Extra mile with a RedBull 😈</li>
+              <li><strong>11am - 12.30pm Mentorship Session 2:</strong> Progress
+                <ul className="list-disc ml-8 mt-2">
+                  <li>Talk with your mentors about progress during the hackathon</li>
+                  <li><strong>Pro-Tip:</strong> prep, ask your team:
+                    <ul className="list-disc ml-8 mt-2">
+                      <li>What did we make since the last checkpoint?</li>
+                      <li>What do we want to achieve before demo time?</li>
+                      <li>What is our dream outcome?</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><strong>12.30pm Session | Startup: From 0 to 1 by idlyboy</strong>
+                <ul className="list-disc ml-8 mt-2">
+                  <li>Experience from scaling a startup to a few million DAUs</li>
+                </ul>
+              </li>
+              <li><strong>6pm - 7.30pm Mentorship Session 3:</strong> Demo Prep
+                <ul className="list-disc ml-8 mt-2">
+                  <li>Let’s prepare demos together</li>
+                  <li><strong>Pro-Tip:</strong> prep a demo:
+                    <ul className="list-disc ml-8 mt-2">
+                      <li>What did we make during the hackathon?</li>
+                      <li>What do we want to improve in the last couple of hours?</li>
+                      <li>How would I describe my project in one sentence? In 60 seconds?</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><strong>24/7 Hacking</strong></li>
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
 
-interface HomeProps {
-  projects: Project[];
-}
+        {/* Thursday 29th August */}
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Thursday 29th August</AccordionTrigger>
+          <AccordionContent>
+            <ul className="list-disc ml-8">
+              <li><strong>11.30am - 1pm:</strong> Demo Time
+                <ul className="list-disc ml-8 mt-2">
+                  <li><strong>Criteria:</strong></li>
+                  <ul className="list-disc ml-8">
+                    <li>Technical Completeness (How much did you hack during the hackathon)</li>
+                    <li>Technical Perspective (What can you do after hackathon with that demo)</li>
+                    <li>Idea (How cool is your idea? Does it match the tracks?)</li>
+                    <li>Completeness (How good is your app?)</li>
+                    <li>Personal Impression (Do judges like your project?)</li>
+                  </ul>
+                </ul>
+              </li>
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const projects = await prisma.project.findMany({
-    include: { comments: true },
-  });
-
-  // Convert Date objects to strings
-  const serializedProjects = projects.map((project) => ({
-    ...project,
-    comments: project.comments.map((comment) => ({
-      ...comment,
-      createdAt: comment.createdAt.toISOString(),
-    })),
-  }));
-
-  return { props: { projects: serializedProjects } };
+      </Accordion>
+    </div>
+  );
 };
 
-const Home: React.FC<HomeProps> = ({ projects }) => {
-  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
-
-  const toggleReadMore = (id: number) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
+const Home = () => {
   return (
-    <Layout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Hackathon Projects</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              className="border p-4 rounded-lg shadow-lg"
-            >
-              <Link href={`/projects/${project.id}`}>
-                  <Image 
-                    src={project.image} 
-                    alt={project.title} 
-                    width={400} 
-                    height={200} 
-                    className="w-full h-48 object-cover rounded-lg mb-4" 
-                  />
-                  <h2 className="text-xl font-bold">{project.title}</h2>
+    <div className="container mx-auto p-8">
+      {/* Header Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h1 className="text-3xl font-bold text-center">ZuVillage Hackathon</h1>
+          <p className="text-center italic text-lg">
+            Great projects come with great people in a great environment. And YOU are going to prove that!
+          </p>
+        </CardHeader>
+        <CardContent className="flex justify-center my-4">
+          <Image
+            src="/giphy-3.webp"
+            alt="Hackathon gif"
+            width={500}
+            height={300}
+          />
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button>
+            <Link href="https://cryptpad.fr/form/#/2/form/view/ylElBnP6jNUvi9z79vG-V6p81Z+UQIJiJQzQgAVuYao/p/" target="_blank">
+              Application Form | Pass: sakartvelo
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Tracks Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">Let’s build together for d/acc in these Tracks:</h2>
+        </CardHeader>
+        <CardContent>
+          <ul className="list-disc ml-8">
+            <li>Cognitive Sovereignty</li>
+            <li>Artificial Intelligence</li>
+            <li>Decentralized Government</li>
+            <li>Network States</li>
+            <li>Science: Longevity, DeSci, Space</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      {/* Bounties Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">Bounties</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center">
+            <Image
+              src="/panther.png"
+              alt="Panther Protocol Logo"
+              width={150}
+              height={150}
+            />
+            <h3 className="text-xl font-semibold mt-4">By Panther Protocol</h3>
+            <ul className="list-disc ml-8 mt-4">
+              <li>$1000 Bounty: The Best Startup Pitch</li>
+              <li>$2000: The Best Idea</li>
+              <li>$3000: The Best Project Build On The Hackathon</li>
+            </ul>
+          </div>
+          <div className="flex flex-col items-center mt-8">
+            <Image
+              src="/image.png"
+              alt="Zuzalu Logo"
+              width={150}
+              height={150}
+            />
+            <h3 className="text-xl font-semibold mt-4">By Zuzalu.City</h3>
+            <ul className="list-disc ml-8 mt-4">
+              <li>$500 Bounty: “Decentralized Advertisement Banner”</li>
+              <li>$500 Bounty: “Web3 Application Form”</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col items-center mt-8">
+          <p className='mt-4 text-muted-foreground mb-2'>Want to submit your bounty? Easy!</p>
+             <Button>
+              <Link href="https://t.me/alexvargaxyz" target="_blank">
+                Chat With Alex
               </Link>
-              <div className={`mb-4 ${expanded[project.id] ? '' : 'max-h-20 overflow-hidden'}`}>
-                <ReactMarkdown>{project.description}</ReactMarkdown>
-              </div>
-              <button
-                className="text-primary hover:underline"
-                onClick={() => toggleReadMore(project.id)}
-              >
-                {expanded[project.id] ? 'Read less' : 'Read more'}
-              </button>
-              <p className="mt-4"><strong>Owner:</strong> {project.owner}</p>
-              <h3 className="font-semibold mt-4">Comments:</h3>
-              <ul className="mt-2">
-                {project.comments.slice(0, 3).map((comment) => (
-                  <li key={comment.id} className="border-t mt-2 pt-2 text-ellipsis overflow-hidden">{comment.content}</li>
-                ))}
-              </ul>
-              {project.comments.length > 3 && (
-                <p className="text-primary hover:underline mt-2">
-                  +{project.comments.length - 3} more comments
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </Layout>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Perks Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">For You</h2>
+        </CardHeader>
+        <CardContent>
+          <ul className="list-disc ml-8">
+            <li>🍕 Pizza, ⚡ Snacks For All Attendees</li>
+            <li>$7000 in prizes</li>
+            <li>Closing Ceremony Party</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      {/* For ZuVillagers & Frens Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">For ZuVillagers & Frens</h2>
+        </CardHeader>
+        <CardContent>
+          <p>ZuVillagers, People from Zuzalu, and your friends are invited! For people who want to join online, we will do a broadcast.</p>
+          <div className="flex justify-center my-4">
+            <Image
+              src="/giphy-2.webp"
+              alt="Hackathon gif"
+              width={500}
+              height={300}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* What Happens Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">What typically happens at a hackathon?</h2>
+        </CardHeader>
+        <CardContent>
+          <p>After hosting over 50 hacks, we’ve noticed common patterns:</p>
+          <ul className="list-disc ml-8">
+            <li><strong>Meet cool people:</strong> Collaborate with others who face similar challenges and look for team members.</li>
+            <li><strong>Opportunity for non-tech people:</strong> You don’t need to be an engineer to join. People from different domains are welcome.</li>
+            <li><strong>Dream project:</strong> Build your dream project, whether it’s a startup, new job, or volunteering.</li>
+            <li><strong>Try something new:</strong> Hackathons are a great chance to experiment with new frameworks, technologies, and ideas.</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      {/* Schedule Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">Schedule</h2>
+        </CardHeader>
+        <CardContent>
+         <Schedule/>
+        </CardContent>
+      </Card>
+
+      {/* FAQ Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">FAQ</h2>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is a hackathon?</AccordionTrigger>
+              <AccordionContent>
+                Hackathon is a 48-hour hacking marathon where people come together to collaborate to solve a problem or identify new opportunities.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Can I build anything I want?</AccordionTrigger>
+              <AccordionContent>
+                Yes. Work on your pet project, startup, or work routine. If you want to build a new project, it is recommended to align with ZuVillage principles such as privacy, cognitive sovereignty, and d/acc.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Do I need a team?</AccordionTrigger>
+              <AccordionContent>
+                No, it’s not required, but the best experience is if you have a team of 2 to 5 people.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>I don’t have a team, can I join?</AccordionTrigger>
+              <AccordionContent>
+                Of course! Over 50% of attendees do not have a team.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>Can I attend if I miss a hackday?</AccordionTrigger>
+              <AccordionContent>
+                Yes, sure. Hackathon is a separate event as well!
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-6">
+              <AccordionTrigger>Are there any prizes?</AccordionTrigger>
+              <AccordionContent>
+                Yes, some sponsors will provide cash and other prizes for the best projects. Join our hack days for updates!
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-7">
+              <AccordionTrigger>I have more questions</AccordionTrigger>
+              <AccordionContent>
+                Sure, ask them in our Element group!
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
