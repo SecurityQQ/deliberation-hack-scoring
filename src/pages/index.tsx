@@ -26,7 +26,12 @@ const Schedule = () => {
                   <li>Moment to pitch your project that you want to work on</li>
                 </ul>
               </li>
-              <li><strong>3pm – 4pm Mentors Checkpoint</strong>
+              <li><strong>3pm:</strong> Discussion: From 0 to 1
+                <ul className="list-disc ml-8 mt-2">
+                  <li>We will discuss how to succeed as a startup</li>
+                </ul>
+              </li>
+              <li><strong>4pm – 5pm Mentors Checkpoint</strong>
                 <ul className="list-disc ml-8 mt-2">
                   <li>Each person shares their progress and problems</li>
                   <li>Other people try to share their stories of how they solved similar projects</li>
@@ -63,21 +68,17 @@ const Schedule = () => {
                   </li>
                 </ul>
               </li>
-              <li><strong>12.30pm Session | Startup: From 0 to 1 by idlyboy</strong>
-                <ul className="list-disc ml-8 mt-2">
-                  <li>Experience from scaling a startup to a few million DAUs</li>
-                </ul>
-              </li>
-              <li><strong>6pm - 7.30pm Mentorship Session 3:</strong> Demo Prep
+              <li><strong>5pm - 7.30pm</strong> Demo Time
                 <ul className="list-disc ml-8 mt-2">
                   <li>Let’s prepare demos together</li>
-                  <li><strong>Pro-Tip:</strong> prep a demo:
-                    <ul className="list-disc ml-8 mt-2">
-                      <li>What did we make during the hackathon?</li>
-                      <li>What do we want to improve in the last couple of hours?</li>
-                      <li>How would I describe my project in one sentence? In 60 seconds?</li>
+                   <li><strong>Criteria:</strong></li>
+                    <ul className="list-disc ml-8">
+                      <li>Technical Completeness (How much did you hack during the hackathon)</li>
+                      <li>Technical Perspective (What can you do after hackathon with that demo)</li>
+                      <li>Idea (How cool is your idea? Does it match the tracks?)</li>
+                      <li>Completeness (How good is your app?)</li>
+                      <li>Personal Impression (Do judges like your project?)</li>
                     </ul>
-                  </li>
                 </ul>
               </li>
               <li><strong>24/7 Hacking</strong></li>
@@ -90,17 +91,7 @@ const Schedule = () => {
           <AccordionTrigger>Thursday 29th August</AccordionTrigger>
           <AccordionContent>
             <ul className="list-disc ml-8">
-              <li><strong>11.30am - 1pm:</strong> Demo Time
-                <ul className="list-disc ml-8 mt-2">
-                  <li><strong>Criteria:</strong></li>
-                  <ul className="list-disc ml-8">
-                    <li>Technical Completeness (How much did you hack during the hackathon)</li>
-                    <li>Technical Perspective (What can you do after hackathon with that demo)</li>
-                    <li>Idea (How cool is your idea? Does it match the tracks?)</li>
-                    <li>Completeness (How good is your app?)</li>
-                    <li>Personal Impression (Do judges like your project?)</li>
-                  </ul>
-                </ul>
+              <li><strong>Winners Announcement</strong> At Closing Ceremony
               </li>
             </ul>
           </AccordionContent>
